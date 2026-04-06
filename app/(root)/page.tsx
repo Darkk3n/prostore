@@ -1,5 +1,5 @@
 import ProductList from '@/components/shared/product/product-list';
-import sampleData from '@/sample-data';
+import sampleData from '@/db/sample-data';
 
 const HomePage = () => {
     return (
