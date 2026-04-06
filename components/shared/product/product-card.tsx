@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Card, CardContent, CardHeader } from '../ui/card';
+import { Card, CardContent, CardHeader } from '../../ui/card';
 import { Product } from './product-list';
 
 const ProductCard = ({ product }: { product: Product }) => {

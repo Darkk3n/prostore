@@ -1,4 +1,4 @@
-import { Product } from './components/product/product-list';
+import { Product } from './components/shared/product/product-list';
 
 const sampleData = {
     products: [
