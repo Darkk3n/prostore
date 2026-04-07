@@ -1,36 +1,56 @@
-// 1. Import dotenv/config once at the very top
-//    This ensures your .env variables are loaded globally for the Node.js process.
-//    If your main Next.js app or a global bootstrap file already does this, you might not need it here.
-//    However, for standalone scripts or server actions that might run independently, it's safer to include.
-import 'dotenv/config';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { PrismaClient as PrismaClientBase } from '@/lib/generated/prisma/client';
+import { neonConfig } from '@neondatabase/serverless';
+import { PrismaNeon } from '@prisma/adapter-neon';
+import ws from 'ws';
 
-import { PrismaClient } from '@/lib/generated/prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
+// Sets up WebSocket connections, which enables Neon to use WebSocket communication.
+neonConfig.webSocketConstructor = ws;
+const connectionString = `${process.env.DATABASE_URL}`;
 
-// 2. Instantiate the PrismaPg adapter once
-const adapter = new PrismaPg({
-    connectionString: process.env.DATABASE_URL,
-});
+// Instantiates the Prisma adapter using the Neon connection pool to handle the connection between Prisma and Neon.
+const adapter = new PrismaNeon({ connectionString });
 
-// 3. Declare a variable for PrismaClient
-//    This allows us to conditionally assign to it.
-let prisma: PrismaClient;
+type CustomPrismaClient = PrismaClientBase & ReturnType<PrismaClientBase['$extends']>;
+let prisma: CustomPrismaClient;
 
-// 4. Implement a singleton pattern
-//    This is crucial for Next.js development with hot-reloading.
-//    In development, Next.js can re-import modules multiple times,
-//    leading to multiple PrismaClient instances if not handled.
-//    globalThis is a global object that persists across hot reloads.
+// Extends the PrismaClient with a custom result transformer to convert the price and rating fields to strings.
 if (process.env.NODE_ENV === 'production') {
-    prisma = new PrismaClient({ adapter });
+    prisma = new PrismaClientBase({ adapter }).$extends({
+        result: {
+            product: {
+                price: {
+                    compute(product) {
+                        return product.price.toString();
+                    },
+                },
+                rating: {
+                    compute(product) {
+                        return product.rating.toString();
+                    },
+                },
+            },
+        },
+    }) as any;
 } else {
-    // Use globalThis to store the PrismaClient instance
-    // This ensures only one instance is created during development hot-reloads
-    if (!global.prisma) {
-        global.prisma = new PrismaClient({ adapter });
+    if (!globalThis.prisma) {
+        globalThis.prisma = new PrismaClientBase({ adapter }).$extends({
+            result: {
+                product: {
+                    price: {
+                        compute(product) {
+                            return product.price.toString();
+                        },
+                    },
+                    rating: {
+                        compute(product) {
+                            return product.rating.toString();
+                        },
+                    },
+                },
+            },
+        }) as any;
     }
-    prisma = global.prisma;
+    prisma = globalThis.prisma as CustomPrismaClient;
 }
-
-// 5. Export the single instance
 export default prisma;
