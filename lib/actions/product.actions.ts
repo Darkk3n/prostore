@@ -10,3 +10,8 @@ export async function getLatestProducts() {
     });
     return data;
 }
+
+export async function getProductBySlug(slug: string) {
+    const product = await prisma.product.findFirst({ where: { slug: slug } });
+    return product;
+}
