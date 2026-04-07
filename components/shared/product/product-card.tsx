@@ -1,7 +1,7 @@
+import { Product } from '@/types';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader } from '../../ui/card';
-import { Product } from './product-list';
 import ProductPrice from './product-price';
 
 const ProductCard = ({ product }: { product: Product }) => {
