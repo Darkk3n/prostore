@@ -1,4 +1,4 @@
-import prisma from '@/lib/prisma';
+import prisma from '@/db/prisma';
 import 'dotenv/config';
 import sampleData from './sample-data';
 
