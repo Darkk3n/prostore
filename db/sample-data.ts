@@ -1,5 +1,3 @@
-import { Product } from './components/shared/product/product-list';
-
 const sampleData = {
     products: [
         {
@@ -15,7 +13,7 @@ const sampleData = {
             stock: 5,
             isFeatured: true,
             banner: 'banner-1.jpg',
-        } as Product,
+        },
         {
             name: 'Brooks Brothers Long Sleeved Shirt',
             slug: 'brooks-brothers-long-sleeved-shirt',
@@ -29,7 +27,7 @@ const sampleData = {
             stock: 10,
             isFeatured: true,
             banner: 'banner-2.jpg',
-        } as Product,
+        },
         {
             name: 'Tommy Hilfiger Classic Fit Dress Shirt',
             slug: 'tommy-hilfiger-classic-fit-dress-shirt',
@@ -43,7 +41,7 @@ const sampleData = {
             stock: 0,
             isFeatured: false,
             banner: '',
-        } as Product,
+        },
         {
             name: 'Calvin Klein Slim Fit Stretch Shirt',
             slug: 'calvin-klein-slim-fit-stretch-shirt',
@@ -57,7 +55,7 @@ const sampleData = {
             stock: 10,
             isFeatured: false,
             banner: null,
-        } as Product,
+        },
         {
             name: 'Polo Ralph Lauren Oxford Shirt',
             slug: 'polo-ralph-lauren-oxford-shirt',
@@ -71,7 +69,7 @@ const sampleData = {
             stock: 6,
             isFeatured: false,
             banner: null,
-        } as Product,
+        },
         {
             name: 'Polo Classic Pink Hoodie',
             slug: 'polo-classic-pink-hoodie',
@@ -85,7 +83,7 @@ const sampleData = {
             stock: 8,
             isFeatured: true,
             banner: null,
-        } as Product,
+        },
     ],
 };
 
