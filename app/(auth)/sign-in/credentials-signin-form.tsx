@@ -6,10 +6,13 @@ import { Label } from '@/components/ui/label';
 import { signInWithCredentials } from '@/lib/actions/user.actions';
 import { signInDefaultValues } from '@/lib/constants';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 
 const CredentialsSignInForm = () => {
+    const searchParams = useSearchParams();
+    const callbackUrl = searchParams.get('callbackUrl') || '/';
     const [data, action] = useActionState(signInWithCredentials, { success: false, message: '' });
     const SignInButton = () => {
         const { pending } = useFormStatus();
@@ -25,6 +28,11 @@ const CredentialsSignInForm = () => {
     };
     return (
         <form action={action}>
+            <input
+                type="hidden"
+                name="callbackUrl"
+                value={callbackUrl}
+            />
             <div className="space-y-6">
                 <div>
                     <Label htmlFor="email">Email</Label>
