@@ -18,18 +18,29 @@ export function formatNumberWithDecimal(num: number): string {
 }
 
 //eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function formatError(error: any) {
+export function formatError(error: any) {
     if (error.name === 'ZodError') {
         // handle Zod Error
         const fieldErrors = Object.keys(error.errors).map((field) => error.errors[field].message);
         return fieldErrors.join('. ');
     } else if (error.name === 'PrismaClientKnownRequestError' && error.code === 'P2002') {
         // handle Prisma Error
-        console.log(error.meta)
-        const field = error.meta?.driverAdapterError?.cause?.constraint?.fields[0] || 'Field'
+        console.log(error.meta);
+        const field = error.meta?.driverAdapterError?.cause?.constraint?.fields[0] || 'Field';
         return `${field.charAt(0).toUpperCase() + field.slice(1)} already exists`;
     } else {
         // Handle other errors
-        return typeof error.message ==='string'? error.message: JSON.stringify(error.message)
+        return typeof error.message === 'string' ? error.message : JSON.stringify(error.message);
+    }
+}
+
+export function round2(value: number | string) {
+    const numericValue = Number(value);
+    if (typeof numericValue === 'number' && !isNaN(numericValue)) {
+        return Math.round((numericValue + Number.EPSILON) * 100) / 100;
+    } else {
+        throw new Error(
+            'Value is not a valid number or a string that can be converted to a number.',
+        );
     }
 }
