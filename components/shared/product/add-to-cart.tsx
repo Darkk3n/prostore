@@ -31,7 +31,13 @@ const AddToCart = ({ item, cart }: { item: CartItem; cart?: Cart }) => {
 
     const handleRemoveFromCart = async () => {
         const res = await removeFromCart(item.productId);
-        toast.success(`${res.message}`, {
+        if (!res.success) {
+            toast.error(res.message, {
+                position: 'top-right',
+            });
+            return;
+        }
+        toast.success(res.message, {
             position: 'top-right',
         });
         return;
