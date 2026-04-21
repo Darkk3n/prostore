@@ -44,3 +44,16 @@ export function round2(value: number | string) {
         );
     }
 }
+
+const CURRENCY_FORMATTER = new Intl.NumberFormat('en-US', {
+    currency: 'USD',
+    style: 'currency',
+    minimumFractionDigits: 2,
+});
+
+export function formatCurrency(amount: string | number | null) {
+    if (typeof amount !== 'string' && typeof amount !== 'number') {
+        return 'NaN';
+    }
+    return CURRENCY_FORMATTER.format(Number(amount));
+}
