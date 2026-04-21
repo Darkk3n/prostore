@@ -17,7 +17,7 @@ const AddToCart = ({ item }: { item: CartItem }) => {
             });
             return;
         }
-        toast.success(`${item.name} added to cart`, {
+        toast.success(`${res.message}`, {
             position: 'top-right',
             action: {
                 label: 'Go to Cart',
