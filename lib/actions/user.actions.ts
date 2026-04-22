@@ -7,6 +7,7 @@ import { hashSync } from 'bcrypt-ts-edge';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { formatError } from '../utils';
 import { shippingAddressSchema, signInFormSchema, signUpFormSchema } from '../validators';
+import { getMyCart } from './cart.actions';
 
 export async function signInWithCredentials(prevState: unknown, formData: FormData) {
     try {
@@ -33,6 +34,13 @@ export async function signInWithCredentials(prevState: unknown, formData: FormDa
 }
 
 export async function signOutUser() {
+    const currentCart = await getMyCart();
+
+    if (currentCart?.id) {
+        await prisma.cart.delete({ where: { id: currentCart.id } });
+    } else {
+        console.warn('No cart found for deletion.');
+    }
     await signOut();
 }
 
