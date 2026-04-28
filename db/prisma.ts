@@ -31,6 +31,65 @@ if (process.env.NODE_ENV === 'production') {
                     },
                 },
             },
+            cart: {
+                itemsPrice: {
+                    needs: { itemsPrice: true },
+                    compute(cart) {
+                        return cart.itemsPrice.toString();
+                    },
+                },
+                taxPrice: {
+                    needs: { taxPrice: true },
+                    compute(cart) {
+                        return cart.taxPrice.toString();
+                    },
+                },
+                shippingPrice: {
+                    needs: { shippingPrice: true },
+                    compute(cart) {
+                        return cart.shippingPrice.toString();
+                    },
+                },
+                totalPrice: {
+                    needs: { totalPrice: true },
+                    compute(cart) {
+                        return cart.totalPrice.toString();
+                    },
+                },
+            },
+            order: {
+                itemsPrice: {
+                    needs: { itemsPrice: true },
+                    compute(cart) {
+                        return cart.itemsPrice.toString();
+                    },
+                },
+                taxPrice: {
+                    needs: { taxPrice: true },
+                    compute(cart) {
+                        return cart.taxPrice.toString();
+                    },
+                },
+                shippingPrice: {
+                    needs: { shippingPrice: true },
+                    compute(cart) {
+                        return cart.shippingPrice.toString();
+                    },
+                },
+                totalPrice: {
+                    needs: { totalPrice: true },
+                    compute(cart) {
+                        return cart.totalPrice.toString();
+                    },
+                },
+            },
+            orderItem: {
+                price: {
+                    compute(cart) {
+                        return cart.price.toString();
+                    },
+                },
+            },
         },
     }) as any;
 } else {
@@ -46,6 +105,65 @@ if (process.env.NODE_ENV === 'production') {
                     rating: {
                         compute(product) {
                             return product.rating.toString();
+                        },
+                    },
+                },
+                cart: {
+                    itemsPrice: {
+                        needs: { itemsPrice: true },
+                        compute(cart) {
+                            return cart.itemsPrice.toString();
+                        },
+                    },
+                    taxPrice: {
+                        needs: { taxPrice: true },
+                        compute(cart) {
+                            return cart.taxPrice.toString();
+                        },
+                    },
+                    shippingPrice: {
+                        needs: { shippingPrice: true },
+                        compute(cart) {
+                            return cart.shippingPrice.toString();
+                        },
+                    },
+                    totalPrice: {
+                        needs: { totalPrice: true },
+                        compute(cart) {
+                            return cart.totalPrice.toString();
+                        },
+                    },
+                },
+                order: {
+                    itemsPrice: {
+                        needs: { itemsPrice: true },
+                        compute(cart) {
+                            return cart.itemsPrice.toString();
+                        },
+                    },
+                    taxPrice: {
+                        needs: { taxPrice: true },
+                        compute(cart) {
+                            return cart.taxPrice.toString();
+                        },
+                    },
+                    shippingPrice: {
+                        needs: { shippingPrice: true },
+                        compute(cart) {
+                            return cart.shippingPrice.toString();
+                        },
+                    },
+                    totalPrice: {
+                        needs: { totalPrice: true },
+                        compute(cart) {
+                            return cart.totalPrice.toString();
+                        },
+                    },
+                },
+                orderItem: {
+                    price: {
+                        compute(cart) {
+                            return cart.price.toString();
                         },
                     },
                 },
