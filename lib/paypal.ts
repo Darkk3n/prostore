@@ -23,3 +23,5 @@ async function generateAccesstoken() {
         throw new Error(errorMessage);
     }
 }
+
+export { generateAccesstoken };
