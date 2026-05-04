@@ -16,11 +16,11 @@ const links = [
     },
     {
         title: 'Orders',
-        href: '/admin/Orders',
+        href: '/admin/orders',
     },
     {
         title: 'Users',
-        href: '/admin/Users',
+        href: '/admin/users',
     },
 ];
 
