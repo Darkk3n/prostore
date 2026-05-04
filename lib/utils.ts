@@ -46,7 +46,7 @@ export function round2(value: number | string) {
     }
 }
 
-const CURRENCY_FORMATTER = new Intl.NumberFormat('en-US', {
+const CURRENCY_FORMATTER = new Intl.NumberFormat('es-MX', {
     currency: 'USD',
     style: 'currency',
     minimumFractionDigits: 2,
@@ -57,6 +57,12 @@ export function formatCurrency(amount: string | number | null) {
         return 'NaN';
     }
     return CURRENCY_FORMATTER.format(Number(amount));
+}
+
+const NUMBER_FORMATTER = new Intl.NumberFormat('es-MX');
+
+export function formatNumber(number: number) {
+    return NUMBER_FORMATTER.format(number);
 }
 
 export function formatId(id: string) {
