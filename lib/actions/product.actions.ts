@@ -1,7 +1,9 @@
 'use server';
 import prisma from '@/db/prisma';
 import 'dotenv/config';
+import { revalidatePath } from 'next/cache';
 import { LATEST_PRODUCTS_LIMIT, PAGE_SIZE } from '../constants';
+import { formatError } from '../utils';
 
 export async function getLatestProducts() {
     const data = await prisma.product.findMany({
@@ -37,4 +39,20 @@ export async function getAllProducts({
     const dataCount = await prisma.product.count();
 
     return { data, totalPages: Math.ceil(dataCount / limit) };
+}
+
+export async function deleteProduct(productId: string) {
+    try {
+        const productExists = await prisma.product.findFirst({
+            where: { id: productId },
+        });
+        if (!productExists) throw new Error('Product not found');
+
+        await prisma.product.delete({ where: { id: productId } });
+
+        revalidatePath('/admin/products');
+        return { success: true, message: 'Product deleted successfully' };
+    } catch (error) {
+        return { success: false, message: formatError(error) };
+    }
 }

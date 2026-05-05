@@ -1,3 +1,4 @@
+import DeleteDialog from '@/components/shared/delete-dialog';
 import Pagination from '@/components/shared/pagination';
 import { Button } from '@/components/ui/button';
 import {
@@ -8,7 +9,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { getAllProducts } from '@/lib/actions/product.actions';
+import { deleteProduct, getAllProducts } from '@/lib/actions/product.actions';
 import { formatCurrency, formatId } from '@/lib/utils';
 import Link from 'next/link';
 
@@ -63,7 +64,10 @@ const AdminProductsPage = async (props: {
                                 >
                                     <Link href={`/admin/products/${p.id}`}>Edit</Link>
                                 </Button>
-                                {/* DELETE */}
+                                <DeleteDialog
+                                    id={p.id}
+                                    action={deleteProduct}
+                                />
                             </TableCell>
                         </TableRow>
                     ))}
