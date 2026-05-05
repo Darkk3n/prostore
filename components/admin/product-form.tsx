@@ -10,8 +10,7 @@ import slugify from 'slugify';
 import { z } from 'zod';
 import FormInput from '../form-input';
 import { Button } from '../ui/button';
-import { FieldGroup } from '../ui/field';
-import { Label } from '../ui/label';
+import { FieldGroup, FieldLabel } from '../ui/field';
 import { Textarea } from '../ui/textarea';
 
 type CreateProductFormProps = {
@@ -92,7 +91,7 @@ const ProductForm = ({ type, product, productId }: CreateProductFormProps) => {
             <div className="upload-field flex flex-col gap-5 md:flex-row">{/* Images */}</div>
             <div className="upload-field">{/* isFeatured */}</div>
             <div>
-                <Label className="mb-2">Description</Label>
+                <FieldLabel className="mb-2">Description</FieldLabel>
                 <Textarea
                     className="resize-none"
                     {...form.register('description')}
