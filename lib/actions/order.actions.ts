@@ -254,7 +254,7 @@ export async function getAllOrders({ limit = PAGE_SIZE, page }: { limit?: number
     return { data, totalPages: Math.ceil(dataCount / limit) };
 }
 
-export async function deleteAction(orderId: string) {
+export async function deleteOrder(orderId: string) {
     try {
         await prisma.order.delete({ where: { id: orderId } });
         revalidatePath('/admin/orders');
