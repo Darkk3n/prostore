@@ -1,12 +1,14 @@
 'use client';
 
+import { createProduct, updateProduct } from '@/lib/actions/product.actions';
 import { productDefaultValues } from '@/lib/constants';
 import { insertProductsSchema, updateProductSchema } from '@/lib/validators';
 import { Product } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import slugify from 'slugify';
+import { toast } from 'sonner';
 import { z } from 'zod';
 import FormInput from '../form-input';
 import { Button } from '../ui/button';
@@ -27,8 +29,43 @@ const ProductForm = ({ type, product, productId }: CreateProductFormProps) => {
             typeof insertProductsSchema
         >,
     });
+    const handleOnSubmit: SubmitHandler<z.infer<typeof insertProductsSchema>> = async (values) => {
+        if (type === 'Create') {
+            const res = await createProduct(values);
+            if (!res.success) {
+                toast.error(res.message, { position: 'top-right' });
+                return;
+            }
+            toast.success(res.message, { position: 'top-right' });
+            router.push('/admin/products');
+        } else if (type === 'Update') {
+            if (!productId) {
+                router.push('/admin/products');
+                return;
+            }
+            const res = await updateProduct({ ...values, id: productId });
+            if (!res.success) {
+                toast.error(res.message, { position: 'top-right' });
+                return;
+            }
+            toast.success(res.message, { position: 'top-right' });
+            router.push('/admin/products');
+        }
+    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const onError = (errors: any) => {
+        toast.error('Please check the form for errors', {
+            description: 'Some required fields are missing or invalid.',
+            position: 'top-right',
+        });
+        console.log(errors);
+    };
     return (
-        <form className="space-y-8">
+        <form
+            className="space-y-8"
+            method="post"
+            onSubmit={form.handleSubmit(handleOnSubmit, onError)}
+        >
             <div className="flex flex-col items-start md:flex-row gap-5">
                 <FieldGroup>
                     <FormInput
