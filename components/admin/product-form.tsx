@@ -1,19 +1,20 @@
 'use client';
 
-import { createProduct, updateProduct } from '@/lib/actions/product.actions';
-import { productDefaultValues } from '@/lib/constants';
-import { insertProductsSchema, updateProductSchema } from '@/lib/validators';
-import { Product } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import slugify from 'slugify';
 import { toast } from 'sonner';
 import { z } from 'zod';
+
+import { createProduct, updateProduct } from '@/lib/actions/product.actions';
+import { productDefaultValues } from '@/lib/constants';
+import { insertProductsSchema, updateProductSchema } from '@/lib/validators';
+import { Product } from '@/types';
+
 import FormInput from '../form-input';
 import { Button } from '../ui/button';
-import { FieldGroup, FieldLabel } from '../ui/field';
-import { Textarea } from '../ui/textarea';
+import { FieldGroup } from '../ui/field';
 
 type CreateProductFormProps = {
     type: 'Create' | 'Update';
@@ -60,6 +61,8 @@ const ProductForm = ({ type, product, productId }: CreateProductFormProps) => {
         });
         console.log(errors);
     };
+    const images = form.watch('images');
+
     return (
         <form
             className="space-y-8"
@@ -125,13 +128,24 @@ const ProductForm = ({ type, product, productId }: CreateProductFormProps) => {
                     />
                 </FieldGroup>
             </div>
-            <div className="upload-field flex flex-col gap-5 md:flex-row">{/* Images */}</div>
+            <div className="upload-field flex flex-col gap-5 md:flex-row">
+                <div className="w-full">
+                    <FormInput
+                        control={form.control}
+                        name="images"
+                        type="image"
+                        label="Images"
+                    />
+                </div>
+            </div>
             <div className="upload-field">{/* isFeatured */}</div>
             <div>
-                <FieldLabel className="mb-2">Description</FieldLabel>
-                <Textarea
-                    className="resize-none"
-                    {...form.register('description')}
+                <FormInput
+                    type="textarea"
+                    name="description"
+                    control={form.control}
+                    label="Description"
+                    placeholder=""
                 />
             </div>
             <div>
