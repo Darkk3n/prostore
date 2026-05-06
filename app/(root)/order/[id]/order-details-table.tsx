@@ -237,10 +237,10 @@ const OrderDetailsTable = ({
                                 </div>
                             )}
                             {/* Cash on delivery */}
-                            {!isAdmin && !isPaid && paymentMethod === 'CashOnDelivery' && (
+                            {isAdmin && !isPaid && paymentMethod === 'CashOnDelivery' && (
                                 <MarkAsPaidButton />
                             )}
-                            {!isAdmin && isPaid && !isDelivered && <MarkAsDeliveredButton />}
+                            {isAdmin && isPaid && !isDelivered && <MarkAsDeliveredButton />}
                         </CardContent>
                     </Card>
                 </div>
