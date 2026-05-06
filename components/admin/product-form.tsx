@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import slugify from 'slugify';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -64,9 +64,11 @@ const ProductForm = ({ type, product, productId }: CreateProductFormProps) => {
         });
         console.log(errors);
     };
-    const images = form.watch('images');
-    const isFeatured = form.watch('isFeatured');
-    const banner = form.watch('banner');
+
+    const [isFeatured, banner] = useWatch({
+        control: form.control,
+        name: ['isFeatured', 'banner'],
+    });
 
     return (
         <form
