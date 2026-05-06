@@ -16,6 +16,7 @@ import { Input, InputProps } from '@/components/ui/input'; // Import InputProps 
 import { UploadButton } from '@/lib/uploadthing';
 
 import { Card, CardContent } from './ui/card';
+import { Checkbox } from './ui/checkbox';
 import { RadioGroup, RadioGroupItem, RadioGroupProps } from './ui/radio-group';
 import { Textarea } from './ui/textarea';
 
@@ -27,7 +28,16 @@ interface TextInputProps<TFieldValues extends FieldValues> extends Omit<
     InputProps,
     'name' | 'defaultValue'
 > {
-    type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'textarea' | 'image'; // Common input types
+    type?:
+        | 'text'
+        | 'email'
+        | 'password'
+        | 'number'
+        | 'tel'
+        | 'url'
+        | 'textarea'
+        | 'image'
+        | 'checkbox';
     label: string;
     placeholder?: string;
 }
@@ -169,6 +179,17 @@ function FormInput<TFieldValues extends FieldValues>(props: FormInputProps<TFiel
                             </div>
                         </CardContent>
                     </Card>
+                );
+                break;
+            case 'checkbox':
+                inputComponent = (
+                    <div className="flex flex-row gap-3">
+                        <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                        />
+                        <FieldLabel>{label}</FieldLabel>
+                    </div>
                 );
                 break;
         }
