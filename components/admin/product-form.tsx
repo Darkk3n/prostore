@@ -12,8 +12,11 @@ import { productDefaultValues } from '@/lib/constants';
 import { insertProductsSchema, updateProductSchema } from '@/lib/validators';
 import { Product } from '@/types';
 
+import { UploadButton } from '@/lib/uploadthing';
+import Image from 'next/image';
 import FormInput from '../form-input';
 import { Button } from '../ui/button';
+import { Card, CardContent } from '../ui/card';
 import { FieldGroup } from '../ui/field';
 
 type CreateProductFormProps = {
@@ -62,6 +65,8 @@ const ProductForm = ({ type, product, productId }: CreateProductFormProps) => {
         console.log(errors);
     };
     const images = form.watch('images');
+    const isFeatured = form.watch('isFeatured');
+    const banner = form.watch('banner');
 
     return (
         <form
@@ -138,7 +143,40 @@ const ProductForm = ({ type, product, productId }: CreateProductFormProps) => {
                     />
                 </div>
             </div>
-            <div className="upload-field">{/* isFeatured */}</div>
+            <div className="upload-field">
+                <Card>
+                    <CardContent className="space-y-2 mt-2 min-h-48">
+                        <FormInput
+                            control={form.control}
+                            name="isFeatured"
+                            type="checkbox"
+                            label="Is Featured?"
+                        />
+                        {isFeatured && banner && (
+                            <Image
+                                src={banner}
+                                alt="banner image"
+                                className="w-full object-cover rounder-sm"
+                                width={1920}
+                                height={680}
+                            />
+                        )}
+                        {isFeatured && !banner && (
+                            <UploadButton
+                                endpoint="imageUploader"
+                                onClientUploadComplete={(res: { url: string }[]) => {
+                                    form.setValue('banner', res[0].url);
+                                }}
+                                onUploadError={(error: Error) => {
+                                    toast.error(error.message, {
+                                        position: 'top-right',
+                                    });
+                                }}
+                            />
+                        )}
+                    </CardContent>
+                </Card>
+            </div>
             <div>
                 <FormInput
                     type="textarea"
