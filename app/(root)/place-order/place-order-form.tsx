@@ -5,12 +5,19 @@ import { createOrder } from '@/lib/actions/order.actions';
 import { Check, Loader } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useFormStatus } from 'react-dom';
+import { toast } from 'sonner';
 
 const PlaceOrderForm = () => {
     const router = useRouter();
-    const handleSubmit = async (event: React.FormEvent) => {
+    const handleSubmit = async (event: React.SubmitEvent) => {
         event.preventDefault();
         const res = await createOrder();
+        if (!res.success) {
+            toast.error(`An ocurred during order creation: ${res.message}`, {
+                position: 'top-right',
+            });
+            return;
+        }
         if (res.redirectTo) {
             router.push(res.redirectTo);
         }
