@@ -21,7 +21,7 @@ export const insertProductsSchema = z.object({
     isFeatured: z.boolean(),
     banner: z.string().nullable(),
     price: currency,
-    // rating: z.number(),
+    rating: z.number().optional(),
 });
 
 export const updateProductSchema = insertProductsSchema.extend({

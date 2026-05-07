@@ -16,7 +16,11 @@ const AdminProductUpdatePage = async (props: { params: Promise<{ id: string }> }
             <h1 className="h2-bold">Update Product</h1>
             <ProductForm
                 type="Update"
-                product={{ ...product, price: product.price.toString() }}
+                product={{
+                    ...product,
+                    price: product.price.toString(),
+                    rating: Number(product.rating),
+                }}
                 productId={id}
             />
         </div>
