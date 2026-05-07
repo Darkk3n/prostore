@@ -4,7 +4,7 @@ import 'dotenv/config';
 import { revalidatePath } from 'next/cache';
 import z from 'zod';
 import { LATEST_PRODUCTS_LIMIT, PAGE_SIZE } from '../constants';
-import { formatError } from '../utils';
+import { convertToPlainObject, formatError } from '../utils';
 import { insertProductsSchema, updateProductSchema } from '../validators';
 
 export async function getLatestProducts() {
@@ -18,6 +18,11 @@ export async function getLatestProducts() {
 export async function getProductBySlug(slug: string) {
     const product = await prisma.product.findFirst({ where: { slug: slug } });
     return product;
+}
+
+export async function getProductById(productId: string) {
+    const product = await prisma.product.findFirst({ where: { id: productId } });
+    return convertToPlainObject(product);
 }
 
 type GetAllProductsProps = {
