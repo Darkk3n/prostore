@@ -8,6 +8,7 @@ import { revalidatePath } from 'next/cache';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { z } from 'zod';
 import { PAGE_SIZE } from '../constants/index';
+import { Prisma } from '../generated/prisma/client';
 import { formatError } from '../utils';
 import {
     paymentMethodSchema,
@@ -141,14 +142,32 @@ export async function updateUserProfile(user: { name: string; email: string }) {
     }
 }
 
-export async function getAllUsers({ limit = PAGE_SIZE, page }: { limit?: number; page: number }) {
+export async function getAllUsers({
+    limit = PAGE_SIZE,
+    page,
+    query,
+}: {
+    limit?: number;
+    page: number;
+    query: string;
+}) {
+    const queryFilter: Prisma.UserWhereInput =
+        query && query !== 'all'
+            ? {
+                  name: {
+                      contains: query,
+                      mode: 'insensitive',
+                  } as Prisma.StringFilter,
+              }
+            : {};
     const data = await prisma.user.findMany({
+        where: { ...queryFilter },
         orderBy: { createdAt: 'desc' },
         take: limit,
         skip: (page - 1) * limit,
     });
 
-    const dataCount = await prisma.user.count();
+    const dataCount = await prisma.user.count({ where: { ...queryFilter } });
 
     return { data, totalPages: Math.ceil(dataCount / limit) };
 }
