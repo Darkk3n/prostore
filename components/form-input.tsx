@@ -15,9 +15,11 @@ import { Field, FieldError, FieldLabel } from '@/components/ui/field'; // Adjust
 import { Input, InputProps } from '@/components/ui/input'; // Import InputProps for type safety
 import { UploadButton } from '@/lib/uploadthing';
 
+import { USER_ROLES } from '@/lib/constants';
 import { Card, CardContent } from './ui/card';
 import { Checkbox } from './ui/checkbox';
 import { RadioGroup, RadioGroupItem, RadioGroupProps } from './ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Textarea } from './ui/textarea';
 
 // Define the props for the common component.
@@ -37,7 +39,8 @@ interface TextInputProps<TFieldValues extends FieldValues> extends Omit<
         | 'url'
         | 'textarea'
         | 'image'
-        | 'checkbox';
+        | 'checkbox'
+        | 'select';
     label: string;
     placeholder?: string;
 }
@@ -189,6 +192,30 @@ function FormInput<TFieldValues extends FieldValues>(props: FormInputProps<TFiel
                             onCheckedChange={field.onChange}
                         />
                         <FieldLabel>{label}</FieldLabel>
+                    </div>
+                );
+                break;
+            case 'select':
+                inputComponent = (
+                    <div className="w-full">
+                        <Select
+                            onValueChange={field.onChange}
+                            value={field.value.toString()}
+                        >
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select a value" />
+                            </SelectTrigger>
+                            <SelectContent className="w-full">
+                                {USER_ROLES.map((ur) => (
+                                    <SelectItem
+                                        key={ur}
+                                        value={ur}
+                                    >
+                                        {ur.charAt(0).toUpperCase() + ur.slice(1)}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
                 );
                 break;
