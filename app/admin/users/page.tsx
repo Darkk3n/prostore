@@ -45,7 +45,7 @@ const AdminUserPage = async (props: { searchParams: Promise<{ page: string }> })
                                     {u.role === 'user' ? (
                                         <Badge variant="secondary">User</Badge>
                                     ) : (
-                                        <Badge variant="destructive">Admin</Badge>
+                                        <Badge variant="default">Admin</Badge>
                                     )}
                                 </TableCell>
                                 <TableCell>
