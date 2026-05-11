@@ -31,6 +31,9 @@ type GetAllProductsProps = {
     limit?: number;
     page: number;
     category?: string;
+    price?: string;
+    rating?: string;
+    sort?: string;
 };
 
 export async function getAllProducts({
@@ -38,6 +41,9 @@ export async function getAllProducts({
     limit = PAGE_SIZE,
     page,
     category,
+    price,
+    rating,
+    sort,
 }: GetAllProductsProps) {
     // Query filter
     const queryFilter: Prisma.ProductWhereInput =
