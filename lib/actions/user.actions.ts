@@ -2,7 +2,7 @@
 
 import { auth, signIn, signOut } from '@/auth';
 import prisma from '@/db/prisma';
-import { ShippingAddress } from '@/types';
+import { ShippingAddress, User } from '@/types';
 import { hashSync } from 'bcrypt-ts-edge';
 import { revalidatePath } from 'next/cache';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
@@ -158,6 +158,19 @@ export async function deleteUser(userId: string) {
         await prisma.user.delete({ where: { id: userId } });
         revalidatePath('/admin/users');
         return { success: true, message: 'User deleted successfully' };
+    } catch (error) {
+        return { success: false, message: formatError(error) };
+    }
+}
+
+export async function updateUser(user: User) {
+    try {
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { name: user.name, role: user.role },
+        });
+        revalidatePath('/admin/users');
+        return { success: true, message: 'User updated successfully' };
     } catch (error) {
         return { success: false, message: formatError(error) };
     }
