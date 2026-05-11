@@ -4,6 +4,7 @@ import { auth, signIn, signOut } from '@/auth';
 import prisma from '@/db/prisma';
 import { ShippingAddress } from '@/types';
 import { hashSync } from 'bcrypt-ts-edge';
+import { revalidatePath } from 'next/cache';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { z } from 'zod';
 import { PAGE_SIZE } from '../constants/index';
@@ -150,4 +151,14 @@ export async function getAllUsers({ limit = PAGE_SIZE, page }: { limit?: number;
     const dataCount = await prisma.user.count();
 
     return { data, totalPages: Math.ceil(dataCount / limit) };
+}
+
+export async function deleteUser(userId: string) {
+    try {
+        await prisma.user.delete({ where: { id: userId } });
+        revalidatePath('/admin/users');
+        return { success: true, message: 'User deleted successfully' };
+    } catch (error) {
+        return { success: false, message: formatError(error) };
+    }
 }
