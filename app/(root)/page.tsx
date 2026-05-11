@@ -1,5 +1,6 @@
+import ProductCarousel from '@/components/shared/product/product-carousel';
 import ProductList from '@/components/shared/product/product-list';
-import { getLatestProducts } from '@/lib/actions/product.actions';
+import { getFeaturedProducts, getLatestProducts } from '@/lib/actions/product.actions';
 import { convertToPlainObject } from '@/lib/utils';
 
 const HomePage = async () => {
@@ -8,8 +9,18 @@ const HomePage = async () => {
         price: product.price.toString(),
         rating: Number(product.rating),
     }));
+    const featuredProducts = await getFeaturedProducts();
     return (
         <>
+            {featuredProducts.length > 0 && (
+                <ProductCarousel
+                    data={featuredProducts.map((fp) => ({
+                        ...fp,
+                        price: fp.price.toString(),
+                        rating: Number(fp.rating),
+                    }))}
+                />
+            )}
             <ProductList
                 data={latestProducts}
                 title="Newest Arrivals"

@@ -120,7 +120,7 @@ export async function getAllCategories() {
     return data;
 }
 
-export async function getFeatureProduct() {
+export async function getFeaturedProducts() {
     const data = await prisma.product.findMany({
         where: { isFeatured: true },
         orderBy: { createAt: 'desc' },
