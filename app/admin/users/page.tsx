@@ -55,7 +55,7 @@ const AdminUserPage = async (props: { searchParams: Promise<{ page: string }> })
                                         variant="outline"
                                         size="sm"
                                     >
-                                        <Link href={`admin/users/${u.id}`}>Edit</Link>
+                                        <Link href={`/admin/users/${u.id}`}>Edit</Link>
                                     </Button>
                                     <DeleteDialog
                                         id={u.id}
