@@ -4,6 +4,7 @@ import 'dotenv/config';
 import { revalidatePath } from 'next/cache';
 import z from 'zod';
 import { LATEST_PRODUCTS_LIMIT, PAGE_SIZE } from '../constants';
+import { Prisma } from '../generated/prisma/client';
 import { convertToPlainObject, formatError } from '../utils';
 import { insertProductsSchema, updateProductSchema } from '../validators';
 
@@ -38,13 +39,27 @@ export async function getAllProducts({
     page,
     category,
 }: GetAllProductsProps) {
+    // Query filter
+    const queryFilter: Prisma.ProductWhereInput =
+        query && query !== 'all'
+            ? {
+                  name: {
+                      contains: query,
+                      mode: 'insensitive',
+                  } as Prisma.StringFilter,
+              }
+            : {};
+
+    // Category filter
+    const categoryFilter = category && category !== 'all' ? { category } : {};
     const data = await prisma.product.findMany({
+        where: { ...queryFilter, ...categoryFilter },
         skip: (page - 1) * limit,
         take: limit,
         orderBy: { createAt: 'desc' },
     });
 
-    const dataCount = await prisma.product.count();
+    const dataCount = await prisma.product.count({ where: { ...queryFilter, ...categoryFilter } });
 
     return { data, totalPages: Math.ceil(dataCount / limit) };
 }

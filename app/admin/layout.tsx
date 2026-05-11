@@ -1,3 +1,4 @@
+import AdminSearch from '@/components/admin/admin-search';
 import Menu from '@/components/shared/header/menu';
 import { APP_NAME } from '@/lib/constants';
 import Image from 'next/image';
@@ -27,11 +28,7 @@ export default function AdminLayout({
                         </Link>
                         <MainNav className="mx-6" />
                         <div className="ml-auto items-center flex space-x-4">
-                            <input
-                                type="search"
-                                placeholder="Search..."
-                                className="md:w-25 lg:w-75"
-                            />
+                            <AdminSearch />
                             <Menu />
                         </div>
                     </div>
