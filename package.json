@@ -8,8 +8,7 @@
         "start": "next start",
         "lint": "eslint",
         "postinstall": "prisma generate",
-        "test": "jest",
-        "test:watch": "jest --watch"
+        "test": "jest"
     },
     "dependencies": {
         "@auth/prisma-adapter": "^2.11.1",
