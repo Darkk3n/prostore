@@ -84,7 +84,9 @@ export async function getAllProducts({
         orderBy: { createAt: 'desc' },
     });
 
-    const dataCount = await prisma.product.count({ where: { ...queryFilter, ...categoryFilter } });
+    const dataCount = await prisma.product.count({
+        where: { ...queryFilter, ...categoryFilter, ...priceFilter, ...ratingFilter },
+    });
 
     return { data, totalPages: Math.ceil(dataCount / limit) };
 }
