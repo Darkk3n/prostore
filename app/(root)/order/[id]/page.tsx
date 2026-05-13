@@ -3,6 +3,7 @@ import { getOrderById } from '@/lib/actions/order.actions';
 import { ShippingAddress } from '@/types';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import Stripe from 'stripe';
 import OrderDetailsTable from './order-details-table';
 
 export const metadata: Metadata = {
@@ -14,6 +15,18 @@ const OrderDetailsPage = async (props: { params: Promise<{ id: string }> }) => {
     const order = await getOrderById(id);
     if (!order) notFound();
     const session = await auth();
+
+    let client_secret = null;
+
+    if (order.paymentMethod === 'Stripe' && !order.isPaid) {
+        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: Math.round(Number(order.totalPrice) * 100),
+            currency: 'USD',
+            metadata: { orderId: order.id },
+        });
+        client_secret = paymentIntent.client_secret;
+    }
 
     return (
         <>
@@ -38,6 +51,7 @@ const OrderDetailsPage = async (props: { params: Promise<{ id: string }> }) => {
                 }}
                 paypalClientId={process.env.PAYPAL_CLIENT_ID || 'sb'}
                 isAdmin={session?.user.role === 'admin' || false}
+                stripeClientSecret={client_secret}
             />
         </>
     );
