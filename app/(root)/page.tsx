@@ -13,6 +13,7 @@ const HomePage = async () => {
     const featuredProducts = await getFeaturedProducts();
     return (
         <>
+            <h1 className="text-black">Cant miss this</h1>
             {featuredProducts.length > 0 && (
                 <ProductCarousel
                     data={featuredProducts.map((fp) => ({
