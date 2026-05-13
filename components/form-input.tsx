@@ -45,11 +45,6 @@ interface SelectInputSpecificProps {
     // Add any other props specific to your Select component
 }
 
-// Props specific to the Image Uploader
-interface ImageUploaderSpecificProps {
-    endpoint: string; // From your UploadButton
-}
-
 // Main FormInputProps discriminated union
 export type FormInputProps<TFieldValues extends FieldValues> = {
     name: Path<TFieldValues>;
@@ -69,7 +64,7 @@ export type FormInputProps<TFieldValues extends FieldValues> = {
         // Case for 'textarea' type
         | ({ type: 'textarea' } & Omit<React.ComponentPropsWithoutRef<'textarea'>, 'name'>)
         // Case for 'imageUploader' type
-        | ({ type: 'image' } & ImageUploaderSpecificProps)
+        | { type: 'image' }
         // Case for 'checkbox' type
         | ({ type: 'checkbox' } & Omit<
               React.ComponentPropsWithoutRef<'input'>,
