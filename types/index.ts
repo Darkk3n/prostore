@@ -13,9 +13,9 @@ import { cartItemSchema, insertCartSchema } from '../lib/validators';
 
 export type Product = z.infer<typeof insertProductsSchema> & {
     id: string;
-    rating: string;
+    rating: number;
     numReviews: number;
-    createdAt: Date;
+    createAt: Date;
 };
 
 export type CartItem = z.infer<typeof cartItemSchema>;
