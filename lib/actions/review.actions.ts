@@ -18,7 +18,7 @@ export async function createUpdateReview(data: z.infer<typeof insertReviewSchema
         if (!product) throw new Error('Product not found');
 
         const reviewExists = await prisma.review.findFirst({
-            where: { productid: review.productId, userId: review.userId },
+            where: { productId: review.productId, userId: review.userId },
         });
 
         await prisma.$transaction(async (tx) => {
