@@ -1,9 +1,10 @@
 'use client';
 
-import FormInput from '@/components/form-input';
+import FormInput, { SelectOption } from '@/components/form-input';
 import { Button } from '@/components/ui/button';
 import { FieldGroup } from '@/components/ui/field';
 import { updateUser } from '@/lib/actions/user.actions';
+import { USER_ROLES } from '@/lib/constants';
 import { updateUserSchema } from '@/lib/validators';
 import { User } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -31,6 +32,14 @@ const UpdateUserform = ({ user }: { user: User }) => {
             toast.error((error as Error).message, { position: 'top-right' });
         }
     };
+    const userRoles: SelectOption[] = USER_ROLES.map((ur) => {
+        return {
+            key: ur,
+            value: ur,
+            customDisplay: ur.charAt(0).toUpperCase() + ur.slice(1),
+        };
+    });
+
     return (
         <form
             method="post"
@@ -55,6 +64,7 @@ const UpdateUserform = ({ user }: { user: User }) => {
                     label="Role"
                     placeholder="Enter User's Role"
                     type="select"
+                    selectOptions={userRoles}
                 />
             </FieldGroup>
             <div className="flex-between">
