@@ -10,12 +10,14 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { createUpdateReview } from '@/lib/actions/review.actions';
 import { reviewFormDefaultValues } from '@/lib/constants';
 import { insertReviewSchema } from '@/lib/validators';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { StarIcon } from 'lucide-react';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 const ReviewForm = ({
@@ -25,7 +27,7 @@ const ReviewForm = ({
 }: {
     userId: string;
     productId: string;
-    onReviewSubmitted?: () => void;
+    onReviewSubmitted: () => void;
 }) => {
     const [open, setOpen] = useState<boolean>(false);
     const form = useForm<z.infer<typeof insertReviewSchema>>({
@@ -33,15 +35,16 @@ const ReviewForm = ({
         defaultValues: reviewFormDefaultValues,
     });
     const handleOpenForm = () => {
+        form.setValue('productId', productId);
+        form.setValue('userId', userId);
         setOpen(true);
     };
 
     const ratingOptions: SelectOption[] = Array.from({ length: 5 }).map((_, index) => {
         const ratingValue = (index + 1).toString(); // Ensure value is a string
         return {
-            key: index.toString(), // or ratingValue if you prefer
-            value: ratingValue, // This is the data that gets stored in the form
-            // This is what the user will see
+            key: index.toString(),
+            value: ratingValue,
             customDisplay: (
                 <div className="flex items-center gap-1">
                     {ratingValue} <StarIcon className="h-4 w-4 inline" />
@@ -49,6 +52,18 @@ const ReviewForm = ({
             ),
         };
     });
+
+    const onSubmit: SubmitHandler<z.infer<typeof insertReviewSchema>> = async (values) => {
+        console.log(values);
+        const res = await createUpdateReview({ ...values, productId });
+        if (!res.success) {
+            toast.error(res.message, { position: 'top-right' });
+            return;
+        }
+        setOpen(false);
+        onReviewSubmitted();
+        toast.success(res.message, { position: 'top-right' });
+    };
     return (
         <Dialog
             open={open}
@@ -61,7 +76,10 @@ const ReviewForm = ({
                 Write a Review
             </Button>
             <DialogContent className="sm:max-w-106.25">
-                <form method="post">
+                <form
+                    method="post"
+                    onSubmit={form.handleSubmit(onSubmit)}
+                >
                     <DialogHeader>
                         <DialogTitle>Write a Review</DialogTitle>
                         <DialogDescription>
