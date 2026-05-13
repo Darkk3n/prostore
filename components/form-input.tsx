@@ -1,114 +1,110 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { UploadButton } from '@/lib/uploadthing';
 import Image from 'next/image';
+import React from 'react';
 import {
-    Control,
+    Control, // Make sure Path is imported
     Controller,
     ControllerFieldState,
     ControllerRenderProps,
-    FieldPath,
     FieldValues,
     Path,
 } from 'react-hook-form';
 import { toast } from 'sonner';
-
-import { Field, FieldError, FieldLabel } from '@/components/ui/field'; // Adjust path if necessary
-import { Input, InputProps } from '@/components/ui/input'; // Import InputProps for type safety
-import { UploadButton } from '@/lib/uploadthing';
-
-import { USER_ROLES } from '@/lib/constants';
 import { Card, CardContent } from './ui/card';
-import { Checkbox } from './ui/checkbox';
-import { RadioGroup, RadioGroupItem, RadioGroupProps } from './ui/radio-group';
+import { Field, FieldError, FieldLabel } from './ui/field';
+import { Input } from './ui/input';
+import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Textarea } from './ui/textarea';
 
-// Define the props for the common component.
-// It will take the RHF specific props (name, control)
-// and common props for the input (label, placeholder, type, etc.)
-// for standard text-like inputs
-interface TextInputProps<TFieldValues extends FieldValues> extends Omit<
-    InputProps,
-    'name' | 'defaultValue'
-> {
-    type?:
-        | 'text'
-        | 'email'
-        | 'password'
-        | 'number'
-        | 'tel'
-        | 'url'
-        | 'textarea'
-        | 'image'
-        | 'checkbox'
-        | 'select';
-    label: string;
-    placeholder?: string;
-}
-
-// For radio group inputs
-export interface RadioGroupOption {
-    label: string;
+// --- Type Definitions ---
+export type SelectOption = {
+    key: string;
     value: string;
-    disabled?: boolean;
+    customDisplay?: React.ReactNode;
+    disabled?: boolean; // Added disabled to SelectOption for consistency
+};
+
+// Props specific to standard text-like inputs
+interface StandardInputSpecificProps {
+    placeholder?: string;
+    // Add any other props truly unique to text/email/password/number/tel/url inputs here
 }
 
-interface RadioInputProps<TFieldValues extends FieldValues> extends Omit<
-    RadioGroupProps,
-    'name' | 'defaultValue' | 'value' | 'onValueChange' | 'onChange'
-> {
-    type: 'radio'; // This "discriminates" this interface
-    label: string; // Overall label for the radio group
-    options: RadioGroupOption[];
-    // Any other props specific to RadioGroup can go here
-    onValueChangeCustom?: (value: string) => void;
+// Props specific to the RadioGroup component
+interface RadioInputSpecificProps {
+    options: { value: string; label: string; disabled?: boolean }[];
+    // Add other props specific to your RadioGroup component if needed
 }
 
-// --- Create the Discriminated Union for FormInputProps ---
-type FormInputProps<TFieldValues extends FieldValues> = {
+// Props specific to the Select component
+interface SelectInputSpecificProps {
+    selectOptions: SelectOption[];
+    placeholder?: string; // For SelectValue's placeholder
+    // Add any other props specific to your Select component
+}
+
+// Props specific to the Image Uploader
+interface ImageUploaderSpecificProps {
+    endpoint: string; // From your UploadButton
+}
+
+// Main FormInputProps discriminated union
+export type FormInputProps<TFieldValues extends FieldValues> = {
     name: Path<TFieldValues>;
     control: Control<TFieldValues>;
-} & (TextInputProps<TFieldValues> | RadioInputProps<TFieldValues>);
-// Notice the intersection with the common `name` and `control` props
+    label: string; // 'label' is common to all or most fields
+    customOnValueChange?: (value: any) => void; // Common callback if applicable
+} &
+    // Case for generic text-like inputs (type can be one of these or undefined/default 'text')
+    (| ({
+              type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url';
+          } & Omit<React.ComponentPropsWithoutRef<'input'>, 'name' | 'defaultValue' | 'type'> &
+              StandardInputSpecificProps)
+        // Case for 'radio' type
+        | ({ type: 'radio' } & RadioInputSpecificProps)
+        // Case for 'select' type
+        | ({ type: 'select' } & SelectInputSpecificProps)
+        // Case for 'textarea' type
+        | ({ type: 'textarea' } & Omit<React.ComponentPropsWithoutRef<'textarea'>, 'name'>)
+        // Case for 'imageUploader' type
+        | ({ type: 'image' } & ImageUploaderSpecificProps)
+        // Case for 'checkbox' type
+        | ({ type: 'checkbox' } & Omit<
+              React.ComponentPropsWithoutRef<'input'>,
+              'name' | 'defaultValue' | 'type'
+          >)
+    );
 
+// --- FormInput Component ---
 function FormInput<TFieldValues extends FieldValues>(props: FormInputProps<TFieldValues>) {
-    const { name, control, label, type = 'text', ...rest } = props;
-    let remainingProps:
-        | Omit<InputProps, 'name' | 'defaultValue'>
-        | Omit<RadioGroupProps, 'name' | 'defaultValue' | 'value' | 'onValueChange' | 'onChange'>;
-    let customOnValueChange: ((value: string) => void) | undefined;
+    const { name, control, label, type = 'text', customOnValueChange, ...rest } = props;
 
-    if (type === 'radio') {
-        const { onValueChangeCustom, ...radioRest } = props as RadioInputProps<TFieldValues>;
-        customOnValueChange = onValueChangeCustom;
-        remainingProps = radioRest;
-    }
-
-    const renderInput = (
-        field: ControllerRenderProps<TFieldValues, FieldPath<TFieldValues>>,
+    const renderInputComponent = (
+        field: ControllerRenderProps<TFieldValues, Path<TFieldValues>>,
         fieldState: ControllerFieldState,
     ) => {
-        let inputComponent = null;
+        let inputComponent: React.ReactNode = null;
+
         switch (type) {
             case 'radio':
+                const radioRest = rest as RadioInputSpecificProps;
                 inputComponent = (
                     <div>
-                        {' '}
-                        <FieldLabel>{label}</FieldLabel> {/* Label for the entire radio group */}
+                        <FieldLabel>{label}</FieldLabel>
                         <RadioGroup
-                            {...field} // field.value and field.onChange will connect to RadioGroup's value and onValueChange
-                            {...(remainingProps as Omit<
-                                RadioGroupProps,
-                                'name' | 'defaultValue' | 'value' | 'onValueChange' | 'onChange'
-                            >)}
+                            {...field}
                             id={name as string}
-                            onValueChange={(value) => {
+                            onValueChange={(value: string) => {
+                                // Ensure onValueChange matches component's expected type
                                 field.onChange(value);
                                 customOnValueChange?.(value);
                             }}
-                            value={field.value} // Explicitly map RHF value to RadioGroup's value
+                            value={field.value}
                         >
                             <div className="flex flex-col space-y-2">
-                                {(rest as RadioInputProps<TFieldValues>).options.map((option) => (
+                                {radioRest.options.map((option) => (
                                     <div
                                         key={option.value}
                                         className="flex items-center space-x-2"
@@ -128,90 +124,32 @@ function FormInput<TFieldValues extends FieldValues>(props: FormInputProps<TFiel
                     </div>
                 );
                 break;
-            case 'textarea':
-                inputComponent = (
-                    <Textarea
-                        {...field}
-                        {...(rest as any)}
-                        className="resize-none"
-                        rows={5}
-                    />
-                );
-            case 'email':
-            case 'password':
-            case 'number':
-            case 'text':
-                inputComponent = (
-                    <Input
-                        {...field} // Spreads onChange, onBlur, value, and ref
-                        {...(rest as Omit<InputProps, 'name' | 'defaultValue'>)} // Cast rest for type safety
-                        id={name as string}
-                        type={type || 'text'} // Default to 'text' if type is undefined
-                        placeholder={(rest as TextInputProps<TFieldValues>).placeholder || label}
-                        aria-invalid={fieldState.invalid}
-                    />
-                );
-                break;
-            case 'image':
-                const currentImages: string[] = (field.value || []) as string[];
-                inputComponent = (
-                    <Card>
-                        <CardContent className="space-y-2 mt-2 min-h-48">
-                            <div className="flex-start space-x-2">
-                                {currentImages.map((image: string) => (
-                                    <Image
-                                        key={image}
-                                        src={image}
-                                        alt="product image"
-                                        className="w-20 h-20 object-cover object-center rounded-sm"
-                                        width={100}
-                                        height={100}
-                                    />
-                                ))}
-                                <UploadButton
-                                    endpoint="imageUploader"
-                                    onClientUploadComplete={(res: { url: string }[]) => {
-                                        field.onChange([...currentImages, res[0].url]);
-                                    }}
-                                    onUploadError={(error: Error) => {
-                                        toast.error(error.message, {
-                                            position: 'top-right',
-                                        });
-                                    }}
-                                />
-                            </div>
-                        </CardContent>
-                    </Card>
-                );
-                break;
-            case 'checkbox':
-                inputComponent = (
-                    <div className="flex flex-row gap-3">
-                        <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                        />
-                        <FieldLabel>{label}</FieldLabel>
-                    </div>
-                );
-                break;
+
             case 'select':
+                const selectRest = rest as SelectInputSpecificProps;
                 inputComponent = (
                     <div className="w-full">
                         <Select
-                            onValueChange={field.onChange}
-                            value={field.value.toString()}
+                            onValueChange={(value: string) => {
+                                // Ensure onValueChange matches component's expected type
+                                field.onChange(value);
+                                customOnValueChange?.(value);
+                            }}
+                            value={field.value?.toString() || ''} // Handle potential null/undefined field.value
                         >
                             <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Select a value" />
+                                <SelectValue
+                                    placeholder={selectRest.placeholder || 'Select a value'}
+                                />
                             </SelectTrigger>
                             <SelectContent className="w-full">
-                                {USER_ROLES.map((ur) => (
+                                {selectRest.selectOptions?.map((option) => (
                                     <SelectItem
-                                        key={ur}
-                                        value={ur}
+                                        key={option.key || option.value} // Use key from SelectOption if available, fallback to value
+                                        value={option.value}
+                                        disabled={option.disabled}
                                     >
-                                        {ur.charAt(0).toUpperCase() + ur.slice(1)}
+                                        {option.customDisplay || option.value}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -219,29 +157,127 @@ function FormInput<TFieldValues extends FieldValues>(props: FormInputProps<TFiel
                     </div>
                 );
                 break;
+
+            case 'textarea':
+                inputComponent = (
+                    <Textarea
+                        className="resize-none"
+                        {...field}
+                        id={name as string}
+                        {...(rest as Omit<React.ComponentPropsWithoutRef<'textarea'>, 'name'>)}
+                    />
+                );
+                break;
+
+            case 'image':
+                const currentImages: string[] = (field.value || []) as string[];
+
+                inputComponent = (
+                    <div className="w-full">
+                        <FieldLabel
+                            htmlFor={name as string}
+                            className="mb-2"
+                        >
+                            Images
+                        </FieldLabel>
+                        <Card>
+                            <CardContent className="space-y-2 mt-2 min-h-48">
+                                <div className="flex-start space-x-2">
+                                    {currentImages.map((image: string) => (
+                                        <Image
+                                            key={image}
+                                            src={image}
+                                            alt="product image"
+                                            className="w-20 h-20 object-cover object-center rounded-sm"
+                                            width={100}
+                                            height={100}
+                                        />
+                                    ))}
+                                    <UploadButton
+                                        endpoint="imageUploader"
+                                        onClientUploadComplete={(res: { url: string }[]) => {
+                                            field.onChange([...currentImages, res[0].url]);
+                                        }}
+                                        onUploadError={(error: Error) => {
+                                            toast.error(error.message, {
+                                                position: 'top-right',
+                                            });
+                                        }}
+                                    />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+                );
+                break;
+
+            case 'checkbox':
+                inputComponent = (
+                    <div className="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            {...field}
+                            checked={!!field.value} // Ensure boolean for checked prop
+                            id={name as string}
+                            {...(rest as Omit<
+                                React.ComponentPropsWithoutRef<'input'>,
+                                'name' | 'defaultValue' | 'type'
+                            >)}
+                        />
+                        <FieldLabel htmlFor={name as string}>{label}</FieldLabel>
+                    </div>
+                );
+                break;
+
+            case 'text':
+            case 'email':
+            case 'password':
+            case 'number':
+            case 'tel':
+            case 'url':
+            default: // Catches text, email, etc. and also if type is undefined (defaults to 'text')
+                const standardInputRest = rest as StandardInputSpecificProps;
+                inputComponent = (
+                    <Input
+                        {...field}
+                        id={name as string}
+                        type={type || 'text'}
+                        placeholder={standardInputRest.placeholder || label}
+                        aria-invalid={fieldState.invalid}
+                        {...(rest as Omit<
+                            React.ComponentPropsWithoutRef<'input'>,
+                            'name' | 'defaultValue' | 'type'
+                        >)}
+                    />
+                );
+                break;
         }
         return inputComponent;
     };
 
     return (
-        <div className="flex flex-row md:flex-col gap-5">
-            <Controller
-                name={name}
-                control={control}
-                render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
-                        {type !== 'radio' && ( // Only render FieldLabel directly for non-radio types
-                            <FieldLabel htmlFor={name as string}>{label}</FieldLabel>
-                        )}
-                        {renderInput(field, fieldState)}
+        <Controller
+            name={name}
+            control={control}
+            render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                    {/* Conditional rendering for label based on type
+              - Radio and Checkbox render their label alongside the input.
+              - ImageUploader renders its label within its specific block.
+              - All other types get the external FieldLabel.
+          */}
+                    {type !== 'radio' && type !== 'image' && type !== 'checkbox' && (
+                        <FieldLabel htmlFor={name as string}>{label}</FieldLabel>
+                    )}
 
-                        {fieldState.invalid && fieldState.error && (
-                            <FieldError>{fieldState.error.message}</FieldError>
-                        )}
-                    </Field>
-                )}
-            />
-        </div>
+                    {renderInputComponent(field, fieldState)}
+
+                    {fieldState.invalid && fieldState.error && (
+                        <FieldError>{fieldState.error.message}</FieldError>
+                    )}
+                </Field>
+            )}
+        />
     );
 }
 
