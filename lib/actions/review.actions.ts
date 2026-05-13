@@ -58,3 +58,25 @@ export async function createUpdateReview(data: z.infer<typeof insertReviewSchema
         return { success: false, message: formatError(error) };
     }
 }
+
+export async function getAllReviewByProductId({ productId }: { productId: string }) {
+    const data = await prisma.review.findMany({
+        where: { productId: productId },
+        include: {
+            user: {
+                select: {
+                    name: true,
+                },
+            },
+        },
+        orderBy: { createdAt: 'desc' },
+    });
+    return { data };
+}
+
+export async function getReviewByProductId({ productId }: { productId: string }) {
+    const session = await auth();
+    if (!session) throw new Error('User not authenticated');
+
+    return await prisma.review.findFirst({ where: { productId, userId: session.user.id } });
+}
