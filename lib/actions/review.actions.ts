@@ -59,7 +59,7 @@ export async function createUpdateReview(data: z.infer<typeof insertReviewSchema
     }
 }
 
-export async function getAllReviewByProductId({ productId }: { productId: string }) {
+export async function getAllReviewsByProductId({ productId }: { productId: string }) {
     const data = await prisma.review.findMany({
         where: { productId: productId },
         include: {
