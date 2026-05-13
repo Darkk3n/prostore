@@ -32,9 +32,14 @@ interface StandardInputSpecificProps {
     // Add any other props truly unique to text/email/password/number/tel/url inputs here
 }
 
+export interface RadioGroupOption {
+    value: string;
+    label: string;
+    disabled?: boolean;
+}
 // Props specific to the RadioGroup component
 interface RadioInputSpecificProps {
-    options: { value: string; label: string; disabled?: boolean }[];
+    options: RadioGroupOption[];
     // Add other props specific to your RadioGroup component if needed
 }
 
