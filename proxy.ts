@@ -3,4 +3,4 @@ import { authConfig } from './auth.config';
 
 const { auth } = NextAuth(authConfig);
 
-export const middleware = auth;
+export const proxy = auth;
