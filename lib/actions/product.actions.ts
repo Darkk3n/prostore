@@ -149,14 +149,6 @@ export async function updateProduct(data: z.infer<typeof updateProductSchema>) {
     }
 }
 
-export async function getAllCategories() {
-    const data = await prisma.product.groupBy({
-        by: ['categoryId'],
-        _count: true,
-    });
-    return data;
-}
-
 export async function getFeaturedProducts() {
     const data = await prisma.product.findMany({
         where: { isFeatured: true },
