@@ -17,7 +17,10 @@ export async function getLatestProducts() {
 }
 
 export async function getProductBySlug(slug: string) {
-    const product = await prisma.product.findFirst({ where: { slug: slug } });
+    const product = await prisma.product.findFirst({
+        where: { slug: slug },
+        include: { category: { select: { name: true } } },
+    });
     return product;
 }
 
