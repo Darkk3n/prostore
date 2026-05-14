@@ -2,7 +2,8 @@
 
 import { auth } from '@/auth';
 import prisma from '@/db/prisma';
-import { PaymentResult } from '@/types';
+import { sendPurchaseReceipt } from '@/email';
+import { PaymentResult, ShippingAddress } from '@/types';
 import { revalidatePath } from 'next/cache';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { PAGE_SIZE } from '../constants';
@@ -188,6 +189,22 @@ export async function updateOrderToPaid({
         include: { orderItems: true, user: { select: { name: true, email: true } } },
     });
     if (!updatedOrder) throw new Error('Order not found');
+
+    sendPurchaseReceipt({
+        order: {
+            ...updatedOrder,
+            shippingAddress: updatedOrder.shippingAddress as ShippingAddress,
+            paymentResult: updatedOrder.paymentResult as PaymentResult,
+            itemsPrice: order.itemsPrice.toString(),
+            totalPrice: order.totalPrice.toString(),
+            shippingPrice: order.shippingPrice.toString(),
+            taxPrice: order.taxPrice.toString(),
+            orderItems: updatedOrder.orderItems.map((oi) => ({
+                ...oi,
+                price: oi.price.toString(),
+            })),
+        },
+    });
 }
 
 export async function getMyOrders({ limit = PAGE_SIZE, page }: { limit?: number; page: number }) {
