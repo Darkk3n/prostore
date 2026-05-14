@@ -58,7 +58,7 @@ export async function getAllProducts({
 
     // Category filter
     const categoryFilter: Prisma.ProductWhereInput =
-        category && category !== 'all' ? { category } : {};
+        category && category !== 'all' ? { categoryId: category } : {};
 
     const priceFilter: Prisma.ProductWhereInput =
         price && price !== 'all'
@@ -148,7 +148,7 @@ export async function updateProduct(data: z.infer<typeof updateProductSchema>) {
 
 export async function getAllCategories() {
     const data = await prisma.product.groupBy({
-        by: ['category'],
+        by: ['categoryId'],
         _count: true,
     });
     return data;
