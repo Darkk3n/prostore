@@ -1,6 +1,7 @@
 import ProductCard from '@/components/shared/product/product-card';
 import { Button } from '@/components/ui/button';
-import { getAllCategories, getAllProducts } from '@/lib/actions/product.actions';
+import { getAllCategories } from '@/lib/actions/category.actions';
+import { getAllProducts } from '@/lib/actions/product.actions';
 import Link from 'next/link';
 
 const prices = [
@@ -122,13 +123,13 @@ const SearchPage = async (props: {
                                 Any
                             </Link>
                         </li>
-                        {categories.map((c) => (
-                            <li key={c.category}>
+                        {categories.data.map((c) => (
+                            <li key={c.id}>
                                 <Link
-                                    className={`${category === c.category && 'font-bold'}`}
-                                    href={getFilterUrl({ c: c.category })}
+                                    className={`${category === c.name && 'font-bold'}`}
+                                    href={getFilterUrl({ c: c.name })}
                                 >
-                                    {c.category}
+                                    {c.name}
                                 </Link>
                             </li>
                         ))}
