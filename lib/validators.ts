@@ -12,7 +12,7 @@ const currency = z
 
 export const insertProductsSchema = z.object({
     name: z.string().min(3, 'Name must be at least 3 characters'),
-    slug: z.string().min(3, 'Slugf must be at least 3 characters'),
+    slug: z.string().min(3, 'Slug must be at least 3 characters'),
     categoryId: z.string().min(3, 'Category must be at least 3 characters'),
     brand: z.string().min(3, 'Brand must be at least 3 characters'),
     description: z.string().min(3, 'Description must be at least 3 characters'),
