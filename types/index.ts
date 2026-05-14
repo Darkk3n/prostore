@@ -1,4 +1,5 @@
 import {
+    insertCategorySchema,
     insertOrderItemSchema,
     insertOrderSchema,
     insertProductsSchema,
@@ -49,3 +50,5 @@ export type Review = z.infer<typeof insertReviewSchema> & {
     createdAt: Date;
     user?: { name: string };
 };
+
+export type Category = z.infer<typeof insertCategorySchema>;
