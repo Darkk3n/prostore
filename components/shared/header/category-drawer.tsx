@@ -7,7 +7,8 @@ import {
     DrawerTitle,
     DrawerTrigger,
 } from '@/components/ui/drawer';
-import { getAllCategories } from '@/lib/actions/product.actions';
+import { getAllCategories } from '@/lib/actions/category.actions';
+
 import { Menu } from 'lucide-react';
 import Link from 'next/link';
 
@@ -25,16 +26,16 @@ const CategoryDrawer = async () => {
                     <DrawerTitle>Select a Category</DrawerTitle>
                 </DrawerHeader>
                 <div className="space-y-1 mt-4">
-                    {categories.map((c) => (
+                    {categories.data.map((c) => (
                         <Button
-                            key={c.category}
+                            key={c.id}
                             variant="ghost"
                             className="w-full justify-start"
                             asChild
                         >
                             <DrawerClose asChild>
-                                <Link href={`/search?category=${c.category}`}>
-                                    {c.category}({c._count})
+                                <Link href={`/search?category=${c.name}`}>
+                                    {c.name}({categories.dataCount})
                                 </Link>
                             </DrawerClose>
                         </Button>
