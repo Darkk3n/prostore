@@ -14,5 +14,8 @@ export async function createCategory(data: Category) {
 }
 
 export async function getAllCategories() {
-    return await prisma.category.findMany();
+    const data = await prisma.category.findMany();
+    const dataCount = await prisma.category.count();
+
+    return { data, dataCount };
 }
