@@ -17,7 +17,10 @@ export async function getLatestProducts() {
 }
 
 export async function getProductBySlug(slug: string) {
-    const product = await prisma.product.findFirst({ where: { slug: slug } });
+    const product = await prisma.product.findFirst({
+        where: { slug: slug },
+        include: { category: { select: { name: true } } },
+    });
     return product;
 }
 
@@ -58,7 +61,7 @@ export async function getAllProducts({
 
     // Category filter
     const categoryFilter: Prisma.ProductWhereInput =
-        category && category !== 'all' ? { category } : {};
+        category && category !== 'all' ? { categoryId: category } : {};
 
     const priceFilter: Prisma.ProductWhereInput =
         price && price !== 'all'
@@ -79,6 +82,7 @@ export async function getAllProducts({
 
     const data = await prisma.product.findMany({
         where: { ...queryFilter, ...categoryFilter, ...priceFilter, ...ratingFilter },
+        include: { category: { select: { name: true } } },
         skip: (page - 1) * limit,
         take: limit,
         orderBy:
@@ -144,14 +148,6 @@ export async function updateProduct(data: z.infer<typeof updateProductSchema>) {
     } catch (error) {
         return { success: false, message: formatError(error) };
     }
-}
-
-export async function getAllCategories() {
-    const data = await prisma.product.groupBy({
-        by: ['category'],
-        _count: true,
-    });
-    return data;
 }
 
 export async function getFeaturedProducts() {

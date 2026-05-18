@@ -14,7 +14,7 @@ import { Product } from '@/types';
 
 import { UploadButton } from '@/lib/uploadthing';
 import Image from 'next/image';
-import FormInput from '../form-input';
+import FormInput, { SelectOption } from '../form-input';
 import { Button } from '../ui/button';
 import { Card, CardContent } from '../ui/card';
 import { FieldGroup } from '../ui/field';
@@ -23,9 +23,10 @@ type CreateProductFormProps = {
     type: 'Create' | 'Update';
     product?: Product;
     productId?: string;
+    categories: SelectOption[];
 };
 
-const ProductForm = ({ type, product, productId }: CreateProductFormProps) => {
+const ProductForm = ({ type, product, productId, categories }: CreateProductFormProps) => {
     const router = useRouter();
     const form = useForm<z.infer<typeof insertProductsSchema>>({
         resolver: zodResolver(type === 'Create' ? insertProductsSchema : updateProductSchema),
@@ -104,10 +105,12 @@ const ProductForm = ({ type, product, productId }: CreateProductFormProps) => {
             <div className="flex flex-col gap-5 md:flex-row">
                 <FieldGroup>
                     <FormInput
-                        name="category"
+                        name="categoryId"
                         control={form.control}
                         label="Category"
-                        placeholder="Enter Category"
+                        placeholder="Select Category"
+                        type="select"
+                        selectOptions={categories}
                     />
                     <FormInput
                         name="brand"

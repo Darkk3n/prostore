@@ -12,8 +12,8 @@ const currency = z
 
 export const insertProductsSchema = z.object({
     name: z.string().min(3, 'Name must be at least 3 characters'),
-    slug: z.string().min(3, 'Slugf must be at least 3 characters'),
-    category: z.string().min(3, 'Category must be at least 3 characters'),
+    slug: z.string().min(3, 'Slug must be at least 3 characters'),
+    categoryId: z.string().min(3, 'Category must be at least 3 characters'),
     brand: z.string().min(3, 'Brand must be at least 3 characters'),
     description: z.string().min(3, 'Description must be at least 3 characters'),
     stock: z.coerce.number(),
@@ -131,4 +131,8 @@ export const insertReviewSchema = z.object({
         .int()
         .min(1, 'Rating must be at least 1')
         .max(5, 'Rating must be at most 5'),
+});
+
+export const insertCategorySchema = z.object({
+    name: z.string().min(1, 'Category Name is required'),
 });

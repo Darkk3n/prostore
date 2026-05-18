@@ -68,7 +68,7 @@ const AdminProductsPage = async (props: {
                             <TableCell className="text-right">
                                 {formatCurrency(p.price.toString())}
                             </TableCell>
-                            <TableCell>{p.category}</TableCell>
+                            <TableCell>{p.category.name}</TableCell>
                             <TableCell>{p.stock}</TableCell>
                             <TableCell>{p.rating.toString()}</TableCell>
                             <TableCell className="flex gap-1">

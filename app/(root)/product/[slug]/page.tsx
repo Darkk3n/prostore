@@ -29,7 +29,7 @@ const ProductDetailsPage = async (props: { params: Promise<{ slug: string }> }) 
                     <div className="col-span-2 p-5">
                         <div className="flex flex-col gap-6">
                             <p>
-                                {product.brand} {product.category}
+                                {product.brand} {product.category.name}
                             </p>
                             <h1 className="h3-bold">{product.name}</h1>
                             <Rating value={Number(product.rating)} />
