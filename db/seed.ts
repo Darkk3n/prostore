@@ -9,6 +9,10 @@ async function main() {
     await prisma.verificationToken.deleteMany();
     await prisma.user.deleteMany();
 
+    await prisma.category.createMany({
+        data: sampleData.categories,
+    });
+
     await prisma.product.createMany({
         data: sampleData.products,
     });

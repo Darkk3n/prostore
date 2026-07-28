@@ -101,6 +101,7 @@ const sampleData = {
             banner: null,
         },
     ],
+    categories: [{ name: 'Mens Dress Shirts' }, { name: 'Mens Sweatshirts' }],
 };
 
 export default sampleData;
