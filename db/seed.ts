@@ -9,8 +9,18 @@ async function main() {
     await prisma.verificationToken.deleteMany();
     await prisma.user.deleteMany();
 
+    await prisma.category.createMany({
+        data: sampleData.categories,
+    });
+    const firstCategory = await prisma.category.findFirst();
+
+    const productsWithCategory = sampleData.products.map((product) => ({
+        ...product,
+        categoryId: firstCategory!.id,
+    }));
+
     await prisma.product.createMany({
-        data: sampleData.products,
+        data: productsWithCategory,
     });
 
     await prisma.user.createMany({
